@@ -76,21 +76,8 @@
   (when (not (ensure-bin "cc"))
     (eprintf "Failed to find C compiler (cc) on PATH\n")
     (os/exit 1))
-  # ensure tree-sitter grammar for janet is available
-  (when (not (os/stat "tree-sitter-module/dist"))
-    (print "Attempting to arrange for a janet tree-sitter grammar...")
-    (def dir (os/cwd))
-    (os/execute ["git"
-                 "clone" "https://github.com/casouri/tree-sitter-module"]
-                :p)
-    (os/cd "tree-sitter-module")
-    (os/execute ["git"
-                 "checkout" tsm-ref]
-                :p)
-    (os/execute ["bash"
-                 "build.sh" "janet-simple"]
-                :p)
-    (os/cd dir)))
+  (when (not (os/stat "tree-sitter"))
+    (os/mkdir "tree-sitter")))
 
 (task "emacs" ["setup"]
   (os/execute ["emacs" "--init-directory=."]

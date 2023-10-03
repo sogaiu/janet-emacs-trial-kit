@@ -126,9 +126,7 @@ jpm run emacs
 
 This might work on Windows if tried via Cygwin or Mingw-w64.  It's
 unlikely to work in vanilla-ish Windows arrangements as some portions
-rely on their being `bash`, `cc`, and possibly other bits.  Also,
-there is a symbolic link involved in the arrangement, so that might
-cause issues as well.
+rely on their being `bash`, `cc`, and possibly other bits.
 
 ## Footnotes
 

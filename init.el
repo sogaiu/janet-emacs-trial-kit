@@ -114,6 +114,12 @@
 ;;
 ;; janet-specific (mostly) things
 
+(setq treesit-language-source-alist
+      '((janet-simple .
+          ("https://github.com/sogaiu/tree-sitter-janet-simple"))))
+
+(treesit-install-language-grammar 'janet-simple)
+
 ;;; janet-ts-mode
 (straight-use-package
  '(janet-ts-mode :host github
