@@ -35,6 +35,10 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+;; this needs to be done so symlinks are used in windows
+(when (eq 'windows-nt system-type)
+  (setq straight-use-symlinks t))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; visual perception aids
@@ -115,8 +119,12 @@
 ;; janet-specific (mostly) things
 
 (setq treesit-language-source-alist
-      '((janet-simple .
-          ("https://github.com/sogaiu/tree-sitter-janet-simple"))))
+      (if (eq 'windows-nt system-type)
+          '((janet-simple
+             . ("https://github.com/sogaiu/tree-sitter-janet-simple"
+                nil nil "gcc.exe")))
+        '((janet-simple
+           . ("https://github.com/sogaiu/tree-sitter-janet-simple")))))
 
 (treesit-install-language-grammar 'janet-simple)
 

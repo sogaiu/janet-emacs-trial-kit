@@ -26,6 +26,19 @@
       (eprintf "%s does not appear to be on PATH" name)
       false)))
 
+(defn ensure-win-bin
+  [name]
+  (try
+    (zero? (let [f (file/temp)
+                 r (os/execute ["where" name]
+                               :px
+                               {:out f})]
+             (file/close f)
+             r))
+    ([e]
+      (eprintf "%s does not appear to be on PATH" name)
+      false)))
+
 (defn get-version
   [cmd ver-peg]
   (try
@@ -58,9 +71,13 @@
 
 (task "setup" []
   # verify emacs exists and its version is sufficient
-  (when (not (ensure-bin "emacs"))
-    (eprintf "Failed to find emacs on PATH\n")
-    (os/exit 1))
+  (if (= :windows (os/which))
+    (when (not (ensure-win-bin "emacs.exe"))
+      (eprintf "Failed to find emacs.exe on PATH\n")
+      (os/exit 1))
+    (when (not (ensure-bin "emacs"))
+      (eprintf "Failed to find emacs on PATH\n")
+      (os/exit 1)))
   (def version
     (get-version ["emacs" "--version"]
                  ~(sequence "GNU Emacs " (capture (to -1)))))
@@ -73,9 +90,13 @@
     (eprintf "Emacs version must be 29 or above, found: %s\n" version)
     (os/exit 1))
   # ensure appropriate c compiler available
-  (when (not (ensure-bin "cc"))
-    (eprintf "Failed to find C compiler (cc) on PATH\n")
-    (os/exit 1))
+  (if (= :windows (os/which))
+    (when (not (ensure-win-bin "gcc.exe"))
+      (eprintf "Failed to find gcc.exe on PATH\n")
+      (os/exit 1))
+    (when (not (ensure-bin "cc"))
+      (eprintf "Failed to find C compiler (cc) on PATH\n")
+      (os/exit 1)))
   (when (not (os/stat "tree-sitter"))
     (os/mkdir "tree-sitter")))
 

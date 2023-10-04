@@ -5,11 +5,19 @@ your existing Emacs setup [1].
 
 ## Requirements
 
-* cc (C compiler)
-* emacs (>= 29.1)
-* git
-* janet
-* jpm
+* `cc` (C compiler)
+* `emacs` (>= 29.1)
+* `git`
+* `janet`
+* `jpm`
+
+To use on Windows, it's currently necessary to:
+
+* Have symlinks enabled (e.g. via developer mode)
+* Have git configured to use symlinks (e.g. via: `git config --global
+  core.symlinks true`)
+* Have `gcc.exe` on your `PATH` (e.g. via: `scoop install gcc`) - this
+  is instead of `cc` mentioned above.
 
 ## What You Get
 
@@ -121,12 +129,6 @@ Start Emacs by:
 ```
 jpm run emacs
 ```
-
-## Notes
-
-This might work on Windows if tried via Cygwin or Mingw-w64.  It's
-unlikely to work in vanilla-ish Windows arrangements as some portions
-rely on their being `bash`, `cc`, and possibly other bits.
 
 ## Footnotes
 
