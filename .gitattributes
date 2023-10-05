@@ -1,2 +1,5 @@
 # our tests are sensitive to line endings
 * text eol=lf
+
+# don't corrupt png images
+*.png binary

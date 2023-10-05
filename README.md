@@ -3,6 +3,8 @@
 Try out some Janet support in Emacs (>= 29.1) without interfering with
 your existing Emacs setup [1].
 
+![Demo](janet-emacs-trial-kit-linux.png?raw=true "Demo")
+
 ## Requirements
 
 * C compiler ([gcc](https://gcc.gnu.org/),
