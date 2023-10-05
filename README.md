@@ -5,11 +5,13 @@ your existing Emacs setup [1].
 
 ## Requirements
 
-* `cc` (C compiler)
-* `emacs` (>= 29.1)
-* `git`
-* `janet`
-* `jpm`
+* C compiler ([gcc](https://gcc.gnu.org/),
+  [clang](https://clang.llvm.org/), etc. invocable via `cc`)
+* [emacs](https://emacs.org) (>= 29.1 with
+  [tree-sitter](https://tree-sitter.github.io/) support)
+* [git](https://git-scm.com/)
+* [janet](https://janet-lang.org)
+* [jpm](https://github.com/janet-lang/jpm)
 
 To use on Windows, it's currently necessary to:
 
