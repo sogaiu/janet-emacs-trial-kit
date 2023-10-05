@@ -134,6 +134,12 @@ Start Emacs by:
 jpm run emacs
 ```
 
+## Operating Systems with Confirmed Success
+
+* Android via Termux (`clang` as `cc`, `janet` + `jpm` built from source)
+* Void Linux
+* Windows 10
+
 ## Footnotes
 
 [1] One of the new features of Emacs 29.1 is being able to start it up
