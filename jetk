@@ -1,3 +1,5 @@
+#! /usr/bin/env janet
+
 (def tsm-ref
   "1b0a57c41c2760eaaa811ac415ded71ae06d2c1c")
 
