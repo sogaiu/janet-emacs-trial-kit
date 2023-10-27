@@ -13,7 +13,6 @@ your existing Emacs setup [1].
   [tree-sitter](https://tree-sitter.github.io/) support)
 * [git](https://git-scm.com/)
 * [janet](https://janet-lang.org)
-* [jpm](https://github.com/janet-lang/jpm)
 
 To use on Windows, it's currently necessary to:
 
@@ -48,7 +47,7 @@ Initial invocations:
 ```
 git clone https://github.com/sogaiu/janet-emacs-trial-kit
 cd janet-emacs-trial-kit
-jpm run emacs
+janet jetk
 ```
 
 The above lines may take some time to complete as there will likely
@@ -67,7 +66,7 @@ testing, typically two buffers become visible:
 * `*scratch*`
 * `*Warnings*`
 
-(Note that subsequent starting of this Emacs setup (`jpm run emacs`)
+(Note that subsequent starting of this Emacs setup (`janet jetk`)
 should not go through most of the steps above so should be much
 faster.)
 
@@ -131,12 +130,12 @@ repl:1:> (+ 1 2)
 Start Emacs by:
 
 ```
-jpm run emacs
+janet jetk
 ```
 
 ## Operating Systems with Confirmed Success
 
-* Android via Termux (`clang` as `cc`, `janet` + `jpm` built from source)
+* Android via Termux (`clang` as `cc`, `janet` built from source)
 * Void Linux
 * Windows 10
 

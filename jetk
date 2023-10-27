@@ -1,17 +1,7 @@
-(declare-project
-  :name "janet-emacs-trial-kit"
-  :description "A Way to Try Emacs with Janet Support"
-  :url "https://github.com/sogaiu/janet-emacs-trial-kit"
-  :repo "git+https://github.com/sogaiu/janet-emacs-trial-kit")
-
 (def tsm-ref
   "1b0a57c41c2760eaaa811ac415ded71ae06d2c1c")
 
 (def proj-dir (os/cwd))
-
-(put (dyn :rules) "test" nil)
-(task "test" []
-  (print "Sorry, no tests here, try `jpm tasks`."))
 
 (defn ensure-bin
   [name]
@@ -69,7 +59,8 @@
         first
         scan-number))
 
-(task "setup" []
+(defn setup
+  []
   # verify emacs exists and its version is sufficient
   (if (= :windows (os/which))
     (when (not (ensure-win-bin "emacs.exe"))
@@ -100,7 +91,10 @@
   (when (not (os/stat "tree-sitter"))
     (os/mkdir "tree-sitter")))
 
-(task "emacs" ["setup"]
-  (os/execute ["emacs" "--init-directory=."]
-              :p))
+(defn main
+  [& argv]
+  (setup)
+  (os/execute ["emacs" "--init-directory=."
+               ;(array/slice argv 1)]
+              :px))
 
