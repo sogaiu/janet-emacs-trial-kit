@@ -82,8 +82,9 @@
     (os/exit 1))
   # ensure appropriate c compiler available
   (if (= :windows (os/which))
-    (when (not (ensure-win-bin "gcc.exe"))
-      (eprintf "Failed to find gcc.exe on PATH\n")
+    (when (and (not (ensure-win-bin "gcc.exe"))
+               (not (ensure-win-bin "clang.exe")))
+      (eprintf "Failed to find gcc.exe or clang.exe on PATH\n")
       (os/exit 1))
     (when (not (ensure-bin "cc"))
       (eprintf "Failed to find C compiler (cc) on PATH\n")
