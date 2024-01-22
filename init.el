@@ -6,59 +6,26 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; straight.el - basic infrastructure for elisp packages and dependencies
-
-;; via:
-;;   https://github.com/radian-software/straight.el#getting-started
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el"
-			 user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         (concat "https://raw.githubusercontent.com/"
-		 "radian-software/straight.el/develop/install.el")
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-;; the linter complains about this file, but see:
-;;
-;;   https://lists.gnu.org/archive/html/help-gnu-emacs/2020-10/msg00003.html
-
-;; via:
-;;   https://github.com/raxod502/straight.el#integration-with-use-package
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-
-;; this needs to be done so symlinks are used in windows
-(when (eq 'windows-nt system-type)
-  (setq straight-use-symlinks t))
+;; vc-use-package
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; visual perception aids
 
 ;;; monokai
-(straight-use-package
- '(monokai-theme :host github
-                 :repo "oneKelvinSmith/monokai-emacs"
-                 :files ("*.el")))
+(use-package monokai-theme
+  :vc (:fetcher github
+       :repo oneKelvinSmith/monokai-emacs))
 
 (load-theme 'monokai t)
 
 ;;; rainbow-delimiters
-(straight-use-package
- '(rainbow-delimiters :host github
-                      :repo "Fanael/rainbow-delimiters"
-                      :files ("*.el")))
-
 (use-package rainbow-delimiters
-  :straight t
+  :vc (:fetcher github
+       :repo Fanael/rainbow-delimiters)
   :config
   (custom-set-faces
    ;; XXX: doesn't seem too helpful for the unclosed case?
@@ -74,10 +41,6 @@
   (add-hook 'janet-ts-mode-hook 'rainbow-delimiters-mode))
 
 ;;; xterm-color
-(straight-use-package
- '(xterm-color :host github
-               :repo "atomontage/xterm-color"
-               :files ("*.el")))
 
 ;; XXX: although M-x shell works better, atm don't know how
 ;;      to get TERM set automatically when M-x shell starts.
@@ -87,7 +50,8 @@
 ;; XXX: ajrepl-mode was made to work, but atm that's via
 ;;      changes to ajrepl.el instead of via a hook.
 (use-package xterm-color
-  :straight t)
+  :vc (:fetcher github
+       :repo atomontage/xterm-color))
 
 ;; XXX: is this really a good way to do things?
 (require 'xterm-color)
@@ -129,10 +93,6 @@
 (treesit-install-language-grammar 'janet-simple)
 
 ;;; janet-ts-mode
-(straight-use-package
- '(janet-ts-mode :host github
-                 :repo "sogaiu/janet-ts-mode"
-                 :files ("*.el")))
 
 ;; https://stackoverflow.com/a/28008006
 (defun my-janet-ts-mode-faces ()
@@ -142,7 +102,8 @@
     'font-lock-keyword-face 'font-lock-type-face))
 
 (use-package janet-ts-mode
-  :straight t
+  :vc (:fetcher github
+       :repo sogaiu/janet-ts-mode)
   :config
   (add-hook 'janet-ts-mode-hook
             'my-janet-ts-mode-faces)
@@ -152,13 +113,9 @@
   '(require 'janet-ts-experiment))
 
 ;;; ajrepl
-(straight-use-package
- '(ajrepl :host github
-          :repo "sogaiu/ajrepl"
-          :files ("*.el" "ajrepl")))
-
 (use-package ajrepl
-  :straight t
+  :vc (:fetcher github
+       :repo sogaiu/ajrepl)
   :config
   (add-hook 'janet-ts-mode-hook
             #'ajrepl-interaction-mode)
@@ -178,60 +135,40 @@
                                  'xterm-color-filter)))))
 
 ;;; a-janet-spork-client
-'(straight-use-package
- '(ajsc :host github
-        :repo "sogaiu/a-janet-spork-client"
-        :files ("*.el")))
-
 '(use-package ajsc
-  :straight t
+  :vc (:fetcher github
+       :repo sogaiu/a-janet-spork-client)
   :config
   (add-hook 'janet-ts-mode-hook
             #'ajsc-interaction-mode))
 
 ;;; flycheck
-(straight-use-package
- '(flycheck :host github
-            :repo "flycheck/flycheck"
-            :files ("*.el")))
-
 (use-package flycheck
-  :straight t
+  :vc (:fetcher github
+       :repo flycheck/flycheck)
   :config
   (global-flycheck-mode)
   ;; https://github.com/flycheck/flycheck/issues/1559#issuecomment-478569550
   (setq flycheck-emacs-lisp-load-path 'inherit))
 
 ;;; flycheck-color-mode-line
-(straight-use-package
- '(flycheck-color-mode-line :host github
-                            :repo "flycheck/flycheck-color-mode-line"
-                            :files ("*.el")))
-
 (use-package flycheck-color-mode-line
-  :straight t
+  :vc (:fetcher github
+       :repo flycheck/flycheck-color-mode-line)
   :config
   (eval-after-load "flycheck"
     '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
 
 ;;; flycheck-janet
-(straight-use-package
- '(flycheck-janet :host github
-               :repo "sogaiu/flycheck-janet"
-               :files ("*.el")))
-
 (use-package flycheck-janet
-  :straight t)
+  :vc (:fetcher github
+       :repo sogaiu/flycheck-janet))
 
 ;;; XXX: need to install review-janet for this to work
 ;;; flycheck-rjan
-'(straight-use-package
- '(flycheck-rjan :host github
-                 :repo "sogaiu/flycheck-rjan"
-                 :files ("*.el")))
-
-'(use-package flycheck-rjan
-  :straight t
+(use-package flycheck-rjan
+  :vc (:fetcher github
+       :repo sogaiu/flycheck-rjan)
   :config
   (flycheck-add-next-checker 'janet-rjan 'janet-janet))
 
