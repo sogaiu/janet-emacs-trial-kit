@@ -6,59 +6,83 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; straight.el - basic infrastructure for elisp packages and dependencies
+;; elpaca - https://github.com/progfolio/elpaca#installer
 
-;; via:
-;;   https://github.com/radian-software/straight.el#getting-started
+(defvar elpaca-installer-version 0.6)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order
+  '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+           :ref nil
+           :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+           :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil
+                                       "-Q" "-L" "." "--batch"
+                                       "--eval"
+                                       (concat "(byte-recompile-directory"
+                                               " \".\" 0 'force)"))))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el"
-			 user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         (concat "https://raw.githubusercontent.com/"
-		 "radian-software/straight.el/develop/install.el")
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; Uncomment for systems which cannot create symlinks:
+;; (elpaca-no-symlink-mode)
 
-;; the linter complains about this file, but see:
-;;
-;;   https://lists.gnu.org/archive/html/help-gnu-emacs/2020-10/msg00003.html
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; via:
-;;   https://github.com/raxod502/straight.el#integration-with-use-package
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+;; https://github.com/progfolio/elpaca#quick-start
 
-;; this needs to be done so symlinks are used in windows
-(when (eq 'windows-nt system-type)
-  (setq straight-use-symlinks t))
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default t))
+
+;; Block until current queue processed.
+(elpaca-wait)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; visual perception aids
 
-;;; monokai
-(straight-use-package
- '(monokai-theme :host github
-                 :repo "oneKelvinSmith/monokai-emacs"
-                 :files ("*.el")))
-
-(load-theme 'monokai t)
+;;; gruvbox-theme
+(use-package gruvbox-theme
+  :elpaca (:host github
+           :repo "greduan/emacs-theme-gruvbox"
+           :files ("*.el"))
+  :config
+  (load-theme 'gruvbox-dark-medium t))
 
 ;;; rainbow-delimiters
-(straight-use-package
- '(rainbow-delimiters :host github
-                      :repo "Fanael/rainbow-delimiters"
-                      :files ("*.el")))
-
 (use-package rainbow-delimiters
-  :straight t
+  :elpaca (:host github
+           :repo "Fanael/rainbow-delimiters"
+           :files ("*.el"))
   :config
   (custom-set-faces
    ;; XXX: doesn't seem too helpful for the unclosed case?
@@ -74,10 +98,6 @@
   (add-hook 'janet-ts-mode-hook 'rainbow-delimiters-mode))
 
 ;;; xterm-color
-(straight-use-package
- '(xterm-color :host github
-               :repo "atomontage/xterm-color"
-               :files ("*.el")))
 
 ;; XXX: although M-x shell works better, atm don't know how
 ;;      to get TERM set automatically when M-x shell starts.
@@ -87,10 +107,11 @@
 ;; XXX: ajrepl-mode was made to work, but atm that's via
 ;;      changes to ajrepl.el instead of via a hook.
 (use-package xterm-color
-  :straight t)
-
-;; XXX: is this really a good way to do things?
-(require 'xterm-color)
+  :elpaca (:host github
+           :repo "atomontage/xterm-color"
+           :files ("*.el"))
+  :init
+  (require 'xterm-color))
 
 ;; for more readable color in shell-mode
 (add-hook 'shell-mode-hook
@@ -129,10 +150,6 @@
 (treesit-install-language-grammar 'janet-simple)
 
 ;;; janet-ts-mode
-(straight-use-package
- '(janet-ts-mode :host github
-                 :repo "sogaiu/janet-ts-mode"
-                 :files ("*.el")))
 
 ;; https://stackoverflow.com/a/28008006
 (defun my-janet-ts-mode-faces ()
@@ -142,7 +159,9 @@
     'font-lock-keyword-face 'font-lock-type-face))
 
 (use-package janet-ts-mode
-  :straight t
+  :elpaca (:host github
+           :repo "sogaiu/janet-ts-mode"
+           :files ("*.el"))
   :config
   (add-hook 'janet-ts-mode-hook
             'my-janet-ts-mode-faces)
@@ -152,13 +171,10 @@
   '(require 'janet-ts-experiment))
 
 ;;; ajrepl
-(straight-use-package
- '(ajrepl :host github
-          :repo "sogaiu/ajrepl"
-          :files ("*.el" "ajrepl")))
-
 (use-package ajrepl
-  :straight t
+  :elpaca (:host github
+           :repo "sogaiu/ajrepl"
+           :files ("*.el" "ajrepl"))
   :config
   (add-hook 'janet-ts-mode-hook
             #'ajrepl-interaction-mode)
@@ -178,62 +194,52 @@
                                  'xterm-color-filter)))))
 
 ;;; a-janet-spork-client
-'(straight-use-package
- '(ajsc :host github
-        :repo "sogaiu/a-janet-spork-client"
-        :files ("*.el")))
-
 '(use-package ajsc
-  :straight t
-  :config
-  (add-hook 'janet-ts-mode-hook
-            #'ajsc-interaction-mode))
+   :elpaca (:host github
+            :repo "sogaiu/a-janet-spork-client"
+            :files ("*.el"))
+   :config
+   (add-hook 'janet-ts-mode-hook
+             #'ajsc-interaction-mode))
 
 ;;; flycheck
-(straight-use-package
- '(flycheck :host github
-            :repo "flycheck/flycheck"
-            :files ("*.el")))
-
 (use-package flycheck
-  :straight t
+  :elpaca (:host github
+           :repo "flycheck/flycheck"
+           :files ("*.el"))
   :config
   (global-flycheck-mode)
   ;; https://github.com/flycheck/flycheck/issues/1559#issuecomment-478569550
   (setq flycheck-emacs-lisp-load-path 'inherit))
 
-;;; flycheck-color-mode-line
-(straight-use-package
- '(flycheck-color-mode-line :host github
-                            :repo "flycheck/flycheck-color-mode-line"
-                            :files ("*.el")))
-
-(use-package flycheck-color-mode-line
-  :straight t
+(use-package flycheck-status-emoji
   :config
-  (eval-after-load "flycheck"
-    '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
+  (flycheck-status-emoji-mode))
 
 ;;; flycheck-janet
-(straight-use-package
- '(flycheck-janet :host github
-               :repo "sogaiu/flycheck-janet"
-               :files ("*.el")))
-
 (use-package flycheck-janet
-  :straight t)
+  :elpaca (:host github
+           :repo "sogaiu/flycheck-janet"
+           :files ("*.el")))
 
 ;;; XXX: need to install review-janet for this to work
 ;;; flycheck-rjan
-'(straight-use-package
- '(flycheck-rjan :host github
-                 :repo "sogaiu/flycheck-rjan"
-                 :files ("*.el")))
-
 '(use-package flycheck-rjan
-  :straight t
+  :elpaca (:host github
+           :repo "sogaiu/flycheck-rjan"
+           :files ("*.el"))
   :config
   (flycheck-add-next-checker 'janet-rjan 'janet-janet))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; extras
+
+;;; magit
+(use-package magit
+  :elpaca (:host github
+           :repo "magit/magit"
+           :files ("lisp/*.el")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
