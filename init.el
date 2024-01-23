@@ -18,9 +18,9 @@
 ;;; monokai
 (use-package monokai-theme
   :vc (:fetcher github
-       :repo oneKelvinSmith/monokai-emacs))
-
-(load-theme 'monokai t)
+       :repo oneKelvinSmith/monokai-emacs)
+  :init
+  (load-theme 'monokai t))
 
 ;;; rainbow-delimiters
 (use-package rainbow-delimiters
@@ -51,10 +51,9 @@
 ;;      changes to ajrepl.el instead of via a hook.
 (use-package xterm-color
   :vc (:fetcher github
-       :repo atomontage/xterm-color))
-
-;; XXX: is this really a good way to do things?
-(require 'xterm-color)
+       :repo atomontage/xterm-color)
+  :config
+  (require 'xterm-color))
 
 ;; for more readable color in shell-mode
 (add-hook 'shell-mode-hook
