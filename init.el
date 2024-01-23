@@ -165,7 +165,7 @@
 
 ;;; XXX: need to install review-janet for this to work
 ;;; flycheck-rjan
-(use-package flycheck-rjan
+'(use-package flycheck-rjan
   :vc (:fetcher github
        :repo sogaiu/flycheck-rjan)
   :config
