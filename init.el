@@ -234,6 +234,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
+;; extras
+
+;;; magit
+(use-package magit
+  :elpaca (:host github
+           :repo "magit/magit"
+           :files ("lisp/*.el")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
 ;; basic emacs settings
 
 (setq resize-mini-windows nil)
