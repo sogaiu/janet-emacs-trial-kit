@@ -6,26 +6,83 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; vc-use-package
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
+;; elpaca - https://github.com/progfolio/elpaca#installer
+
+(defvar elpaca-installer-version 0.6)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order
+  '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+           :ref nil
+           :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+           :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil
+                                       "-Q" "-L" "." "--batch"
+                                       "--eval"
+                                       (concat "(byte-recompile-directory"
+                                               " \".\" 0 'force)"))))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+;; Uncomment for systems which cannot create symlinks:
+;; (elpaca-no-symlink-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://github.com/progfolio/elpaca#quick-start
+
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default t))
+
+;; Block until current queue processed.
+(elpaca-wait)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; visual perception aids
 
-;;; monokai
+;;; monokai-theme
 (use-package monokai-theme
-  :vc (:fetcher github
-       :repo oneKelvinSmith/monokai-emacs)
-  :init
+  :elpaca (:host github
+           :repo "oneKelvinSmith/monokai-emacs"
+           :file ("*.el"))
+  :config
   (load-theme 'monokai t))
 
 ;;; rainbow-delimiters
 (use-package rainbow-delimiters
-  :vc (:fetcher github
-       :repo Fanael/rainbow-delimiters)
+  :elpaca (:host github
+           :repo "Fanael/rainbow-delimiters"
+           :files ("*.el"))
   :config
   (custom-set-faces
    ;; XXX: doesn't seem too helpful for the unclosed case?
@@ -50,9 +107,10 @@
 ;; XXX: ajrepl-mode was made to work, but atm that's via
 ;;      changes to ajrepl.el instead of via a hook.
 (use-package xterm-color
-  :vc (:fetcher github
-       :repo atomontage/xterm-color)
-  :config
+  :elpaca (:host github
+           :repo "atomontage/xterm-color"
+           :files ("*.el"))
+  :init
   (require 'xterm-color))
 
 ;; for more readable color in shell-mode
@@ -102,8 +160,9 @@
     'font-lock-keyword-face 'font-lock-type-face))
 
 (use-package janet-ts-mode
-  :vc (:fetcher github
-       :repo sogaiu/janet-ts-mode)
+  :elpaca (:host github
+           :repo "sogaiu/janet-ts-mode"
+           :files ("*.el"))
   :config
   (add-hook 'janet-ts-mode-hook
             'my-janet-ts-mode-faces)
@@ -114,8 +173,9 @@
 
 ;;; ajrepl
 (use-package ajrepl
-  :vc (:fetcher github
-       :repo sogaiu/ajrepl)
+  :elpaca (:host github
+           :repo "sogaiu/ajrepl"
+           :files ("*.el" "ajrepl"))
   :config
   (add-hook 'janet-ts-mode-hook
             #'ajrepl-interaction-mode)
@@ -136,39 +196,39 @@
 
 ;;; a-janet-spork-client
 '(use-package ajsc
-  :vc (:fetcher github
-       :repo sogaiu/a-janet-spork-client)
-  :config
-  (add-hook 'janet-ts-mode-hook
-            #'ajsc-interaction-mode))
+   :elpaca (:host github
+            :repo "sogaiu/a-janet-spork-client"
+            :files ("*.el"))
+   :config
+   (add-hook 'janet-ts-mode-hook
+             #'ajsc-interaction-mode))
 
 ;;; flycheck
 (use-package flycheck
-  :vc (:fetcher github
-       :repo flycheck/flycheck)
+  :elpaca (:host github
+           :repo "flycheck/flycheck"
+           :files ("*.el"))
   :config
   (global-flycheck-mode)
   ;; https://github.com/flycheck/flycheck/issues/1559#issuecomment-478569550
   (setq flycheck-emacs-lisp-load-path 'inherit))
 
-;;; flycheck-color-mode-line
-(use-package flycheck-color-mode-line
-  :vc (:fetcher github
-       :repo flycheck/flycheck-color-mode-line)
+(use-package flycheck-status-emoji
   :config
-  (eval-after-load "flycheck"
-    '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
+  (flycheck-status-emoji-mode))
 
 ;;; flycheck-janet
 (use-package flycheck-janet
-  :vc (:fetcher github
-       :repo sogaiu/flycheck-janet))
+  :elpaca (:host github
+           :repo "sogaiu/flycheck-janet"
+           :files ("*.el")))
 
 ;;; XXX: need to install review-janet for this to work
 ;;; flycheck-rjan
 '(use-package flycheck-rjan
-  :vc (:fetcher github
-       :repo sogaiu/flycheck-rjan)
+  :elpaca (:host github
+           :repo "sogaiu/flycheck-rjan"
+           :files ("*.el"))
   :config
   (flycheck-add-next-checker 'janet-rjan 'janet-janet))
 

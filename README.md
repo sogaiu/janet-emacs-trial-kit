@@ -57,14 +57,22 @@ be:
 * compiling of C code, and
 * Emacs-related compilation
 
-The launched Emacs may have a `*Warnings*` buffer showing multiple
-warning lines, but usually these things can be ignored.
+The launched Emacs may have buffer named `*elpaca-bootstrap*` which
+typically goes away after a bit to be replaced by a couple of other
+buffers:
 
-At some point the launched Emacs should appear responsive.  In my
-testing, typically two buffers become visible:
-
-* `*scratch*`
+* `*elpaca-log*`
 * `*Warnings*`
+
+`*elpaca-log*` will likely show a list of packages being downloaded.
+Please wait for this to finish.  One can tell once there are no
+longer any packages listed.
+
+Close both of the buffers by pressing `q` with the focus in each.
+
+Unfortunately, `*Warnings*` might pop back open and I don't know a
+good way to cope with this other than to close it again.  After a
+while it may give up (^^;
 
 (Note that subsequent starting of this Emacs setup (`janet jetk`)
 should not go through most of the steps above so should be much
@@ -74,9 +82,9 @@ faster.)
 
 ### Syntax Highlighting
 
-I typically start by closing the `*Warnings*` buffer and opening a
-`.janet` file.  This repository contains `sample.janet` for this
-purpose.  Once opened, one should see:
+I typically start by opening a `.janet` file.  This repository
+contains `sample.janet` for this purpose.  Once opened, one should
+see:
 
 ```janet
 (+ 1 2)
