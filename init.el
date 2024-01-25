@@ -147,7 +147,8 @@
         '((janet-simple
            . ("https://github.com/sogaiu/tree-sitter-janet-simple")))))
 
-(treesit-install-language-grammar 'janet-simple)
+(when (not (treesit-language-available-p 'janet-simple))
+  (treesit-install-language-grammar 'janet-simple))
 
 ;;; janet-ts-mode
 
