@@ -236,8 +236,9 @@
 ;;
 ;; extras
 
+;;; XXX: elpaca has difficulty with this unfortunately
 ;;; magit
-(use-package magit
+'(use-package magit
   :elpaca (:host github
            :repo "magit/magit"
            :files ("lisp/*.el")))
