@@ -247,7 +247,10 @@
            :files ("lisp/*.el")))
 
 ;; https://github.com/progfolio/elpaca/issues/273#issuecomment-1975319923
-(elpaca (magit :tag "v3.3.0"))
+'(elpaca (magit :tag "v3.3.0"))
+
+(elpaca transient)
+(elpaca magit)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
