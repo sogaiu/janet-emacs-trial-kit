@@ -61,10 +61,8 @@
 
 ;; Install use-package support
 (elpaca elpaca-use-package
-  ;; Enable :elpaca use-package keyword.
-  (elpaca-use-package-mode)
-  ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
 
 ;; Block until current queue processed.
 (elpaca-wait)
@@ -75,7 +73,7 @@
 
 ;;; monokai-theme
 (use-package monokai-theme
-  :elpaca (:host github
+  :ensure (:host github
            :repo "oneKelvinSmith/monokai-emacs"
            :file ("*.el"))
   :config
@@ -83,7 +81,7 @@
 
 ;;; rainbow-delimiters
 (use-package rainbow-delimiters
-  :elpaca (:host github
+  :ensure (:host github
            :repo "Fanael/rainbow-delimiters"
            :files ("*.el"))
   :config
@@ -110,7 +108,7 @@
 ;; XXX: ajrepl-mode was made to work, but atm that's via
 ;;      changes to ajrepl.el instead of via a hook.
 (use-package xterm-color
-  :elpaca (:host github
+  :ensure (:host github
            :repo "atomontage/xterm-color"
            :files ("*.el"))
   :init
@@ -163,7 +161,7 @@
     'font-lock-keyword-face 'font-lock-type-face))
 
 (use-package janet-ts-mode
-  :elpaca (:host github
+  :ensure (:host github
            :repo "sogaiu/janet-ts-mode"
            :files ("*.el"))
   :config
@@ -176,7 +174,7 @@
 
 ;;; ajrepl
 (use-package ajrepl
-  :elpaca (:host github
+  :ensure (:host github
            :repo "sogaiu/ajrepl"
            :files ("*.el" "ajrepl"))
   :config
@@ -199,7 +197,7 @@
 
 ;;; a-janet-spork-client
 '(use-package ajsc
-   :elpaca (:host github
+   :ensure (:host github
             :repo "sogaiu/a-janet-spork-client"
             :files ("*.el"))
    :config
@@ -208,7 +206,7 @@
 
 ;;; flycheck
 (use-package flycheck
-  :elpaca (:host github
+  :ensure (:host github
            :repo "flycheck/flycheck"
            :files ("*.el"))
   :config
@@ -217,19 +215,20 @@
   (setq flycheck-emacs-lisp-load-path 'inherit))
 
 (use-package flycheck-status-emoji
+  :ensure t
   :config
   (flycheck-status-emoji-mode))
 
 ;;; flycheck-janet
 (use-package flycheck-janet
-  :elpaca (:host github
+  :ensure (:host github
            :repo "sogaiu/flycheck-janet"
            :files ("*.el")))
 
 ;;; XXX: need to install review-janet for this to work
 ;;; flycheck-rjan
 '(use-package flycheck-rjan
-  :elpaca (:host github
+  :ensure (:host github
            :repo "sogaiu/flycheck-rjan"
            :files ("*.el"))
   :config
@@ -242,7 +241,7 @@
 ;;; XXX: elpaca has difficulty with this unfortunately
 ;;; magit
 '(use-package magit
-  :elpaca (:host github
+  :ensure (:host github
            :repo "magit/magit"
            :files ("lisp/*.el")))
 
