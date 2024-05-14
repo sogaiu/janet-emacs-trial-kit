@@ -248,8 +248,9 @@
 ;; https://github.com/progfolio/elpaca/issues/273#issuecomment-1975319923
 '(elpaca (magit :tag "v3.3.0"))
 
-(elpaca transient)
-(elpaca magit)
+;; XXX: the following made magit work last time checked
+'(elpaca transient)
+'(elpaca magit)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
