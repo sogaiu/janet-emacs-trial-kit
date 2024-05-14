@@ -14,13 +14,8 @@ your existing Emacs setup [1].
 * [git](https://git-scm.com/)
 * [janet](https://janet-lang.org)
 
-To use on Windows, it's currently necessary to:
-
-* Have symlinks enabled (e.g. via developer mode)
-* Have git configured to use symlinks (e.g. via: `git config --global
-  core.symlinks true`)
-* Have `gcc.exe` on your `PATH` (e.g. via: `scoop install gcc`) - this
-  is instead of `cc` mentioned above.
+Windows note: Ensure `gcc.exe` is on your `PATH` (e.g. via: `scoop
+install gcc`) - this is instead of `cc` mentioned above.
 
 ## What You Get
 
@@ -67,6 +62,10 @@ buffers:
 `*elpaca-log*` will likely show a list of packages being downloaded.
 Please wait for this to finish.  One can tell once there are no
 longer any packages listed.
+
+Windows note: For reasons unknown, sometimes there may be a failure
+for elpaca itself.  It appears that quitting emacs and trying again
+(i.e. invoke `janet jetk`) is a work-around for this.
 
 Close both of the buffers by pressing `q` with the focus in each.
 
