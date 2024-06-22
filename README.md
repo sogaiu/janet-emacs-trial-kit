@@ -52,30 +52,19 @@ be:
 * compiling of C code, and
 * Emacs-related compilation
 
-The launched Emacs may have buffer named `*elpaca-bootstrap*` which
-typically goes away after a bit to be replaced by a couple of other
-buffers:
-
-* `*elpaca-log*`
-* `*Warnings*`
+The launched Emacs may have a buffer named `*elpaca-bootstrap*` which
+typically goes away after a bit to be replaced by at least one buffer
+named `*elpaca-log*`.  Other buffers likely can be ignored or
+dismissed.
 
 `*elpaca-log*` will likely show a list of packages being downloaded.
 Please wait for this to finish.  One can tell once there are no
 longer any packages listed.
 
-Windows note: For reasons unknown, sometimes there may be a failure
-for elpaca itself.  It appears that quitting emacs and trying again
-(i.e. invoke `janet jetk`) is a work-around for this.
+If you got this far, that should be it regarding setup.
 
-Close both of the buffers by pressing `q` with the focus in each.
-
-Unfortunately, `*Warnings*` might pop back open and I don't know a
-good way to cope with this other than to close it again.  After a
-while it may give up (^^;
-
-(Note that subsequent starting of this Emacs setup (`janet jetk`)
-should not go through most of the steps above so should be much
-faster.)
+See [here](doc/misc.md) for additional info if there were any issues
+with the above sequence.
 
 ## Verifying Things Are Working
 
