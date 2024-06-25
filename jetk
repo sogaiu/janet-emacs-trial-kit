@@ -26,14 +26,29 @@
         first
         scan-number))
 
+(defn emacs-built-with-ts?
+  []
+  (def cmd ["emacs"
+            "--batch"
+            "--funcall" "treesit-available-p"])
+  (with [of (file/temp)]
+    (with [ef (file/temp)]
+      (zero? (os/execute cmd :p {:out of :err ef})))))
+
 (defn emacs-sufficient?
   [ver-str]
   (def result (get-major-version ver-str))
   (when (not result)
     (eprintf "Failed to parse emacs version string: %s" ver-str)
     (break false))
+  (when (< result 29)
+    (eprintf "Emacs version must be 29 or above, found: %s\n" ver-str)
+    (break false))
+  (when (not (emacs-built-with-ts?))
+    (eprintf "Emacs may not have tree-sitter support")
+    (break false))
   #
-  (>= result 29))
+  true)
 
 (defn setup
   []
@@ -42,7 +57,6 @@
   (when (not emacs-ver-str)
     (os/exit 1))
   (when (not (emacs-sufficient? emacs-ver-str))
-    (eprintf "Emacs version must be 29 or above, found: %s\n" emacs-ver-str)
     (os/exit 1))
   # ensure appropriate c compiler available
   (when (not (c/have-cc?))
