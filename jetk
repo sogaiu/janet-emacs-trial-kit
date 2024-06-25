@@ -28,11 +28,12 @@
 
 (defn emacs-sufficient?
   [ver-str]
-  (if-let [major-version (get-major-version ver-str)]
-    (>= major-version 29)
-    (do
-      (eprintf "Failed to parse emacs version string: %s" ver-str)
-      false)))
+  (def result (get-major-version ver-str))
+  (when (not result)
+    (eprintf "Failed to parse emacs version string: %s" ver-str)
+    (break false))
+  #
+  (>= result 29))
 
 (defn setup
   []
