@@ -1,7 +1,17 @@
 # janet-emacs-trial-kit
 
-Try out some Janet support in Emacs (>= 29.1) without interfering with
-your existing Emacs setup [1].
+The two main purposes of the trial kit are to:
+
+1. Make it easy to experience some Janet support in Emacs (>= 29.1 +
+   integrated tree-sitter support) without having to:
+
+    * Change your existing Emacs configuration [1]
+    * Figure out how to configure Emacs for some Janet support
+    * Manually fetch certain dependencies
+
+2. Provide [a
+   path](https://github.com/sogaiu/janet-editor-and-tooling-info/blob/master/doc/emacs.md)
+   to find out about Janet-relevant Emacs packages.
 
 ![Demo](janet-emacs-trial-kit-linux.png?raw=true "Demo")
 
