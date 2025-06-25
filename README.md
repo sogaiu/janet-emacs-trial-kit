@@ -62,14 +62,15 @@ be:
 * compiling of C code, and
 * Emacs-related compilation
 
-The launched Emacs may have a buffer named `*elpaca-bootstrap*` which
-typically goes away after a bit to be replaced by at least one buffer
-named `*elpaca-log*`.  Other buffers likely can be ignored or
+There may be some related output to the console or terminal before an
+application window for Emacs shows up.
+
+Emacs may display a buffer named `*elpaca-log*`showing some
+setup-related activity.  Other buffers likely can be ignored or
 dismissed.
 
-`*elpaca-log*` will likely show a list of packages being downloaded.
-Please wait for this to finish.  One can tell once there are no
-longer any packages listed.
+Please wait for elpaca's activity to finish.  One can tell once there
+are no longer any packages listed.
 
 If you got this far, that should be it regarding setup.
 
